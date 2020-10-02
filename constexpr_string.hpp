@@ -2,14 +2,15 @@
 //File      : constexpr_string.hpp
 //Author    : Alexandre Sécher (alexandre.secher@iphc.cnrs.fr)
 //Date      : 24/09/2020
-//Framework : PhD thesis, CNRS/IPHC/DRHIM/Hadrontherapy, Strasbourg, France
+//Framework : PhD thesis, CNRS/IPHC/DRS/DeSis, Strasbourg, France
 //
 
 #ifndef constexpr_string_h
 #define constexpr_string_h
 
-
+#include <utility>
 #include <string>
+#include <cstring>
 
 namespace details{
     
