@@ -2,7 +2,7 @@
 //File      : saver.hpp
 //Author    : Alexandre Sécher (alexandre.secher@iphc.cnrs.fr)
 //Date      : 11/09/2020
-//Framework : PhD thesis, CNRS/IPHC/DRHIM/Hadrontherapy, Strasbourg, France
+//Framework : PhD thesis, CNRS/IPHC/DRS/DeSis, Strasbourg, France
 //
 
 #ifndef saver_h
@@ -34,12 +34,12 @@ namespace iwir {
 struct saver{
     
 public:
-    void operator()(TCanvas const* canvas_ph, std::string output_filename_p);
+    void operator()(TCanvas const* canvas_ph, std::string output_filename_p) const;
     
 private:
     template< class ... Ts>
     image< configuration<Ts...> > fill( image< configuration<Ts...> >&& image_p,
-                                        TCanvas const* canvas_ph ) {
+                                        TCanvas const* canvas_ph ) const {
         image_p =  fill_element( std::move(image_p), canvas_ph, pad{});
         int expander[] = { 0, (image_p = fill_element( std::move(image_p), canvas_ph, Ts{}), void(), 0) ... };
         return image_p;
@@ -48,7 +48,7 @@ private:
     template< class ... Ts >
     image< configuration<Ts...> > fill_element( image< configuration<Ts...> >&& image_p,
                                                 TCanvas const* canvas_ph,
-                                                pad ) {
+                                                pad ) const {
         auto & range_x = image_p.template retrieve_element<pad>()
                                 .template retrieve_field<range<x>>();
         range_x.template fill<low, high>( canvas_ph->GetLeftMargin(),
@@ -65,7 +65,7 @@ private:
     template< class ... Ts >
     image< configuration<Ts...> > fill_element( image< configuration<Ts...> >&& image_p,
                                                 TCanvas const* canvas_ph,
-                                                pave_text ) {
+                                                pave_text ) const {
         auto const& primitive_c = *( canvas_ph->GetListOfPrimitives() );
         for( auto const* primitive_h : primitive_c ) {
             if( std::string{primitive_h->ClassName()} ==  "TPaveText"  ){
@@ -98,7 +98,7 @@ private:
     template< class ... Ts >
     image< configuration<Ts...> > fill_element( image< configuration<Ts...> >&& image_p,
                                                 TCanvas const* canvas_ph,
-                                                legend ) {
+                                                legend ) const {
         auto const& primitive_c = *( canvas_ph->GetListOfPrimitives() );
         
 
@@ -154,7 +154,7 @@ private:
     template< class ... Ts >
     image< configuration<Ts...> > fill_element( image< configuration<Ts...> >&& image_p,
                                                 TCanvas const* canvas_ph,
-                                                histogram1d ) {
+                                                histogram1d ) const {
         TIter primitive_i = canvas_ph->GetListOfPrimitives(); //needed to access GetOption()
         TObject const* object_h = nullptr;
         while( (object_h = primitive_i.Next()) ) {
@@ -191,7 +191,7 @@ private:
     template< class ... Ts >
     image< configuration<Ts...> > fill_element( image< configuration<Ts...> >&& image_p,
                                                 TCanvas const* canvas_ph,
-                                                frame1d ) {
+                                                frame1d ) const {
         auto fill_using = [&image_p]( TH1 const* frame_p )
                     {
                         auto & frame_element = image_p.template retrieve_element<frame1d>();
@@ -271,7 +271,7 @@ private:
     
     template<class ... Ts>
     void write( std::string const& output_filename_p,
-                          image<Ts...> config_p ) {
+                          image<Ts...> config_p ) const {
         std::ofstream output{ output_filename_p.c_str(), std::ios::out | std::ios::trunc };
         if( !output.good() ){
             std::cerr << "Something went wrong with the output file\n";

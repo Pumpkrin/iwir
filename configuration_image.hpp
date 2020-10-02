@@ -55,10 +55,11 @@ namespace iwir {
     };
     
     struct user_text {
-        std::string text;
-        std::string      &  value()       { return text; }
-        std::string const&  value() const { return text; }
-        std::string content() const { return details::concatenate( "user_text:=[", text, "]");  }
+        std::string data;
+        std::string text() const { return std::string{data.begin()+1, data.end()-1}; }
+        std::string      &  value()       { return data; }
+        std::string const&  value() const { return data; }
+        std::string content() const { return details::concatenate( "user_text:=[", data, "]");  }
     };
     
     struct low {
@@ -358,6 +359,9 @@ namespace iwir {
         field<T> const& operator[](std::size_t index_p) const { return value_mc[index_p]; }
         
         field<T> & add_value(){ value_mc.push_back( field<T>{}); return value_mc.back(); }
+        
+        auto begin() { return value_mc.begin(); }
+        auto end() { return value_mc.end(); }
         
     private:
         std::vector< field<T> > value_mc;
