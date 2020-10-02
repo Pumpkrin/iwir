@@ -55,6 +55,21 @@ namespace iwir {
         return result_c;
     }
 
+    std::vector< std::string > regex_split( std::string const & text_p, std::regex regex_p ) {
+        std::vector<std::string> result_c;
+        result_c.reserve(10);
+        
+        
+        std::sregex_iterator match_i{ text_p.begin(), text_p.end(), regex_p };
+        auto end_i = std::sregex_iterator{};
+        
+        
+        for(auto iterator = match_i; iterator != end_i ; ++iterator){
+            result_c.push_back( iterator->str() );
+        }
+        
+        return result_c;
+    }
 
 
 }//namespace iwir
