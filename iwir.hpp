@@ -2,7 +2,7 @@
 //File      : iwir.hpp
 //Author    : Alexandre Sécher (alexandre.secher@iphc.cnrs.fr)
 //Date      : 11/09/2020
-//Framework : PhD thesis, CNRS/IPHC/DRHIM/Hadrontherapy, Strasbourg, France
+//Framework : PhD thesis, CNRS/IPHC/DRS/DeSis, Strasbourg, France
 //
 
 #ifndef iwir_h

@@ -48,15 +48,17 @@ namespace iwir {
     };
     
     struct plain_text {
-        std::string text;
-        std::string      &  value()       { return text; }
-        std::string const&  value() const { return text; }
-        std::string content() const { return details::concatenate( "plain_text:=", text);  }
+        std::string data;
+        std::string plain_data() const { return data; }
+        std::string      &  value()       { return data; }
+        std::string const&  value() const { return data; }
+        std::string content() const { return details::concatenate( "plain_text:=", data);  }
     };
     
     struct user_text {
         std::string data;
-        std::string text() const { return std::string{data.begin()+1, data.end()-1}; }
+//        std::string user_data() const { return std::string{data.begin()+1, data.end()-1}; }
+        std::string user_data() const { return data; }
         std::string      &  value()       { return data; }
         std::string const&  value() const { return data; }
         std::string content() const { return details::concatenate( "user_text:=[", data, "]");  }
@@ -216,6 +218,7 @@ namespace iwir {
     template<class T>
     struct element_traits{
         using value_type = single_value_element<T>;
+        using is_single_value = std::true_type;
     };
     
     
@@ -229,6 +232,7 @@ namespace iwir {
     template<>
     struct element_traits<histogram1d>{
         using value_type = multiple_value_element<histogram1d>;
+        using is_single_value = std::false_type;
     };
     
     //    struct histogram2d{
@@ -259,6 +263,7 @@ namespace iwir {
     template<>
     struct element_traits<pave_text>{
         using value_type = multiple_value_element<pave_text>;
+        using is_single_value = std::false_type;
     };
     
     
@@ -361,7 +366,9 @@ namespace iwir {
         field<T> & add_value(){ value_mc.push_back( field<T>{}); return value_mc.back(); }
         
         auto begin() { return value_mc.begin(); }
+        auto begin() const { return value_mc.begin(); }
         auto end() { return value_mc.end(); }
+        auto end() const { return value_mc.end(); }
         
     private:
         std::vector< field<T> > value_mc;
@@ -437,7 +444,9 @@ namespace iwir {
         element<T> & add_value(){ value_mc.emplace_back( element<T>{} ); return value_mc.back(); }
         
         auto begin() { return value_mc.begin(); }
+        auto begin() const { return value_mc.begin(); }
         auto end() { return value_mc.end(); }
+        auto end() const { return value_mc.end(); }
         
     private:
         std::vector< element<T> > value_mc;
@@ -461,11 +470,7 @@ namespace iwir {
     private:
         template<std::size_t ... Indices>
         std::string retrieve_content_impl( std::index_sequence<Indices...>) {
-            return details::concatenate(
-                                        "<config>\n",
-                                        std::get<Indices>(element_mc).retrieve_content()...,
-                                        "\n<config>"
-                                        );
+            return details::concatenate( std::get<Indices>(element_mc).retrieve_content()... );
         }
         
     public:
@@ -475,6 +480,10 @@ namespace iwir {
         
         template<class Element>
         constexpr auto & retrieve_element() {
+            return std::get< typename element_traits< Element >::value_type >(element_mc);
+        }
+        template<class Element>
+        constexpr auto const& retrieve_element() const {
             return std::get< typename element_traits< Element >::value_type >(element_mc);
         }
         
