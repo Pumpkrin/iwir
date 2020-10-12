@@ -6,7 +6,7 @@ IWIR is a simple project aiming to reduce the use of macros to produce graphical
 To compile and run, a working CMake installation is required ( version > 3.12 ), as well as c++14 ROOT installation ( version = 6.1x ). A typical installation will look like the following: 
    - mkdir build && cd build;
    - cmake ../path/to/source && make;
-path/to/build/lib should then be added to either the LD_LIBRARY_PATH (Linux) or the DYLD_LIBRARY_PATH (macosX).
+   - path/to/build/lib should then be added to either the LD_LIBRARY_PATH (Linux) or the DYLD_LIBRARY_PATH (macosX).
 
 This should enable, on principle, the root command line interpreter to access the few functions defined be IWIR. 
 Once installed, two functions are available : 
