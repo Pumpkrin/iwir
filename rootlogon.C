@@ -1,0 +1,3 @@
+{
+   gSystem->Load("libiwir.dylib");
+}
