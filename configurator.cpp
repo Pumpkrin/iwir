@@ -10,7 +10,10 @@
 
 #include <fstream>
 
+#include "TROOT.h"
 #include "TDirectory.h"
+#include "TFile.h"
+#include "TKey.h"
 
 namespace iwir {
 
@@ -54,7 +57,8 @@ namespace iwir {
     {
  
         auto hist_c = find( regex_split(hist_list_p, std::regex{"(\\w| )+([^;]|$)"} ) );
-
+        
+        std::cout << "found: " << hist_c.size() << "hists\n";
         
         auto content = read(config_file_p);
         //add check on size ? match between hist size and config
@@ -97,9 +101,12 @@ namespace iwir {
     std::vector<TH1D*> configurator::find( std::vector<std::string> && hist_p ) const {
         std::vector<TH1D*> result_c;
         
+        //current directory first, then look in registered files
         auto * current_directory_h = TDirectory::CurrentDirectory();
+        std::cout << "directory: " << current_directory_h->GetName() << '\n';
         auto& object_c = *current_directory_h->GetList();
         for( auto * object_h : object_c ){
+            std::cout << "Current object: " << object_h->GetName() << '\n';
             auto hist_i = std::find_if(
                                 hist_p.begin(), hist_p.end(),
                                 [&object_h]( std::string const& name_p )
@@ -110,6 +117,25 @@ namespace iwir {
                 if(hist_h){ result_c.push_back( hist_h ); }
             }
         }
+        
+        //gROOT->GetListOfFiles()
+        auto& file_c = *gROOT->GetListOfFiles();
+        for( auto * file_h : file_c ){
+            auto & key_c = *dynamic_cast<TFile*>(file_h)->GetListOfKeys();
+            for( auto* key_h : key_c ){
+                std::cout << "current_key: " << key_h->GetName() << '\n';
+                auto hist_i = std::find_if(
+                                           hist_p.begin(), hist_p.end(),
+                                           [&key_h]( std::string const& name_p )
+                                           { return name_p == std::string{ key_h->GetName() }; }
+                                           );
+                if( hist_i != hist_p.end() ){
+                    auto * hist_h = dynamic_cast<TH1D*>( dynamic_cast<TKey*>(key_h)->ReadObj() );
+                    if(hist_h){ result_c.push_back( hist_h ); }
+                }
+            }
+        }
+        
         
         return result_c;
     }
